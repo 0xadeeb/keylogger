@@ -14,8 +14,7 @@ void session(tcp::socket sock) {
         std::getline(user_name_stream, user_name);
 
         std::string ip_addr = sock.remote_endpoint().address().to_string();
-        int port = sock.remote_endpoint().port();
-        std::string filename = user_name + "-" + ip_addr + ":" + std::to_string(port) + ".txt";
+        std::string filename = user_name + "-" + ip_addr + ".txt";
 
         std::ofstream outfile(filename);
 

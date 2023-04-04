@@ -48,6 +48,7 @@ int main() {
     }
     outfile = std::ofstream("log.txt");
     socket_ptr = &socket;
+
     signal(SIGINT, sigint_handler);
 
     // Read events from input device
