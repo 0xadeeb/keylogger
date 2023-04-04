@@ -14,12 +14,13 @@ void session(tcp::socket sock) {
         std::getline(user_name_stream, user_name);
 
         std::string ip_addr = sock.remote_endpoint().address().to_string();
-        std::string filename = user_name + "-" + ip_addr + ".txt";
+        int port = sock.remote_endpoint().port();
+        std::string filename = user_name + "-" + ip_addr + ":" + std::to_string(port) + ".txt";
 
         std::ofstream outfile(filename);
 
         boost::asio::streambuf buf;
-        while (boost::asio::read(sock, buf)) {
+        while (boost::asio::read_until(sock, buf, "\n")) {
             std::string data(boost::asio::buffers_begin(buf.data()),
                              boost::asio::buffers_end(buf.data()));
             outfile << data;
@@ -34,11 +35,14 @@ int main() {
     try {
         boost::asio::io_context io_context;
 
-        tcp::acceptor acceptor(io_context, tcp::endpoint(tcp::v4(), PORT)); // hardcoded port number
-
+        tcp::acceptor acceptor(io_context, tcp::endpoint(tcp::v4(), PORT));
+        std::cout << "The reciever is running\n";
         while (true) {
             tcp::socket sock(io_context);
             acceptor.accept(sock);
+            tcp::endpoint endpoint = sock.remote_endpoint();
+            std::cout << "New connection from " << endpoint.address().to_string() << ":"
+                      << endpoint.port() << std::endl;
             std::thread(session, std::move(sock)).detach();
         }
     } catch (std::exception &e) {

