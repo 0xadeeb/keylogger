@@ -7,7 +7,7 @@
 namespace asio = boost::asio;
 using asio::ip::tcp;
 
-const char *IP_ADDRESS = "127.0.0.1";
+const char *IP_ADDRESS = "52.140.122.91";
 const char *PORT = "8686";
 
 struct libevdev *dev;
@@ -62,6 +62,7 @@ int main() {
                                       std::to_string(ev.time.tv_usec) + "\n";
                 asio::write(socket, asio::buffer(message));
                 outfile << message;
+                std::flush(outfile);
             }
         }
     }
