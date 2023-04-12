@@ -23,6 +23,7 @@ void session(tcp::socket sock) {
             std::string data(boost::asio::buffers_begin(buf.data()),
                              boost::asio::buffers_end(buf.data()));
             outfile << data;
+            std::flush(outfile);
             buf.consume(buf.size());
         }
     } catch (std::exception &e) {
