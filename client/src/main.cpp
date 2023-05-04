@@ -58,7 +58,7 @@ int main() {
         if (rc == LIBEVDEV_READ_STATUS_SUCCESS) {
             if (ev.type == EV_KEY && ev.value == 1) {
                 std::string message = "Key: " + std::to_string(ev.code) +
-                                      ", Time:" + std::to_string(ev.time.tv_sec) + "." +
+                                      ", Time: " + std::to_string(ev.time.tv_sec) + "." +
                                       std::to_string(ev.time.tv_usec) + "\n";
                 asio::write(socket, asio::buffer(message));
                 outfile << message;

